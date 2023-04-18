@@ -15,6 +15,7 @@ fn main() {
 
     match opt {
         Opt { year: 2022, day: 1 } => puzzles::year2022::day01::run(),
+        Opt { year: 2022, day: 2 } => puzzles::year2022::day02::run(),
 
         _ => panic!("Puzzle not found"),
     }

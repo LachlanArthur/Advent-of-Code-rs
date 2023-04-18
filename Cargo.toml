@@ -12,3 +12,5 @@ path = "src/main.rs"
 [dependencies]
 structopt = { version = "0.3", default-features = false }
 itertools ={ version = "0.10.4" }
+num-traits = "0.2"
+num-derive = "0.3"

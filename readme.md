@@ -7,11 +7,15 @@ Trying to solve Advent of Code puzzles in Rust, while learning Rust.
 ## Usage
 
 ```
-cargo run 2022 1
+cargo run day 2022 1
+cargo run day 2022 1 some/other/input.txt
+cargo run all
 ```
 or, once built:
 ```
-aoc 2022 1
+aoc day 2022 1
+aoc day 2022 1 some/other/input.txt
+aoc all
 ```
 
 ## Build

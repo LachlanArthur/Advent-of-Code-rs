@@ -1,8 +1,8 @@
-use crate::bench::bench;
+use crate::bench::{Part, make_part_with_standard_tests};
 use itertools::Itertools;
 use num_derive::ToPrimitive;
 use num_traits::ToPrimitive;
-use std::{fs, str::FromStr};
+use std::str::FromStr;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, ToPrimitive)]
 enum RpsChoice {
@@ -111,7 +111,7 @@ impl From<(RpsChoice, RpsOutcome)> for RpsChoice {
     }
 }
 
-pub fn part1(input: &String) -> u64 {
+pub fn part1(input: &String) -> String {
     let games = input.trim().split("\n").map(|s| {
         let game = s.split_whitespace().collect_vec();
 
@@ -123,10 +123,10 @@ pub fn part1(input: &String) -> u64 {
 
     let scores = games.map(|game| game.score());
 
-    return scores.sum();
+    scores.sum::<u64>().to_string()
 }
 
-pub fn part2(input: &String) -> u64 {
+pub fn part2(input: &String) -> String {
     let games = input.trim().split("\n").map(|s| {
         let game = s.split_whitespace().collect_vec();
 
@@ -140,19 +140,12 @@ pub fn part2(input: &String) -> u64 {
 
     let scores = games.map(|game| game.score());
 
-    return scores.sum();
+    scores.sum::<u64>().to_string()
 }
 
-pub fn run() {
-    let example = fs::read_to_string("src/puzzles/year2022/day02/example.txt")
-        .expect("Should have been able to read the file");
-
-    let input = fs::read_to_string("src/puzzles/year2022/day02/input.txt")
-        .expect("Should have been able to read the file");
-
-    bench("Part 1 Example", || part1(&example), Some(15));
-    bench("Part 1 Input", || part1(&input), None);
-
-    bench("Part 2 Example", || part2(&example), Some(12));
-    bench("Part 2 Input", || part2(&input), None);
+pub fn parts(year: u16, day: u8) -> Vec<Part> {
+    vec![
+        make_part_with_standard_tests(year, day, 1, part1, Some("15")),
+        make_part_with_standard_tests(year, day, 2, part2, Some("12")),
+    ]
 }

@@ -1,8 +1,6 @@
-use crate::bench::make_part_with_standard_tests;
-use crate::puzzles::Part;
+use crate::{bench::make_part_with_standard_tests, puzzles::Part};
 use gcollections::ops::*;
-use interval::ops::*;
-use interval::Interval;
+use interval::{ops::*, Interval};
 use itertools::Itertools;
 
 fn parse(input: &String) -> impl Iterator<Item = (u32, u32, u32, u32)> + '_ {

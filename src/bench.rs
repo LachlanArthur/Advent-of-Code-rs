@@ -2,37 +2,19 @@ use itertools::Itertools;
 use std::fs;
 use std::time::{Duration, Instant};
 
-pub struct Part {
-    pub name: String,
-    pub func: fn(&String) -> String,
-    pub tests: Vec<TestFile>,
-}
-
-#[derive(Clone)]
-pub struct TestFile {
-    pub input_name: String,
-    pub input_path: String,
-    pub expected: Option<String>,
-}
+use crate::puzzles::{Part, Puzzle, TestFile};
 
 pub struct BenchResult {
     pub name: String,
     pub elapsed: Duration,
 }
 
-pub fn bench(
-    name: &str,
-    func: impl Fn() -> String,
-    expected: Option<String>,
-    print: bool,
-) -> BenchResult {
+pub fn bench(name: &str, func: impl Fn() -> String, expected: Option<String>) -> BenchResult {
     let start = Instant::now();
     let result = func();
     let elapsed = Instant::elapsed(&start);
 
-    if print {
-        println!("{}: {} [{:?}]", name, result, elapsed);
-    }
+    println!("{}: {} [{:?}]", name, result, elapsed);
 
     if let Some(expected) = expected {
         assert!(result == expected);
@@ -48,8 +30,9 @@ pub fn read_file(path: &str) -> String {
     fs::read_to_string(path).expect(format!("Failed to read file {}", path).as_str())
 }
 
-pub fn benchmark_puzzle_with_inputs(parts: Vec<Part>, print: bool) -> Vec<BenchResult> {
-    parts
+pub fn benchmark_puzzle_with_inputs(puzzle: Puzzle) -> Vec<BenchResult> {
+    puzzle
+        .parts
         .into_iter()
         .flat_map(|Part { name, func, tests }| {
             tests.into_iter().map(
@@ -62,7 +45,6 @@ pub fn benchmark_puzzle_with_inputs(parts: Vec<Part>, print: bool) -> Vec<BenchR
                         format!("{} {}", name, input_name).as_str(),
                         || func(&read_file(input_path.as_str())),
                         expected,
-                        print,
                     )
                 },
             )
@@ -112,4 +94,26 @@ pub fn make_part_with_standard_tests(
     ];
 
     make_part(year, day, part, func, tests)
+}
+
+pub fn clone_puzzle_with_input(puzzle: Puzzle, input: &str) -> Puzzle {
+    Puzzle {
+        year: puzzle.year,
+        day: puzzle.day,
+        parts: puzzle
+            .parts
+            .into_iter()
+            .map(|part| Part {
+                name: part.name,
+                func: part.func,
+                tests: vec![make_test_file("input", input, None)],
+            })
+            .collect_vec(),
+    }
+}
+
+pub fn print_total_duration(results: Vec<BenchResult>) {
+    let total = results.iter().map(|r| r.elapsed).sum::<Duration>();
+
+    println!("Finished in {:?}", total);
 }

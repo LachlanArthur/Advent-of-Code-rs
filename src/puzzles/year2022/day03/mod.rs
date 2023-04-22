@@ -1,4 +1,5 @@
-use crate::bench::{make_part_with_standard_tests, Part};
+use crate::bench::make_part_with_standard_tests;
+use crate::puzzles::Part;
 use itertools::Itertools;
 
 fn find_shared_letter_in_vector_of_strings(strings: &Vec<&str>) -> char {

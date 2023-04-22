@@ -1,4 +1,5 @@
-use crate::bench::{Part, make_part_with_standard_tests};
+use crate::bench::make_part_with_standard_tests;
+use crate::puzzles::Part;
 use itertools::Itertools;
 use num_derive::ToPrimitive;
 use num_traits::ToPrimitive;

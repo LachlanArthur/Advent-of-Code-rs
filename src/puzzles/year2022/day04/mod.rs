@@ -1,5 +1,8 @@
 use crate::bench::make_part_with_standard_tests;
 use crate::puzzles::Part;
+use gcollections::ops::*;
+use interval::ops::*;
+use interval::Interval;
 use itertools::Itertools;
 
 fn parse(input: &String) -> impl Iterator<Item = (u32, u32, u32, u32)> + '_ {
@@ -12,11 +15,10 @@ fn parse(input: &String) -> impl Iterator<Item = (u32, u32, u32, u32)> + '_ {
 pub fn part1(input: &String) -> String {
     parse(input)
         .filter(|(left_min, left_max, right_min, right_max)| {
-            let left_range = left_min..=left_max;
-            let right_range = right_min..=right_max;
+            let left = Interval::new(*left_min, *left_max);
+            let right = Interval::new(*right_min, *right_max);
 
-            (left_range.contains(&right_min) && left_range.contains(&right_max))
-                || (right_range.contains(&left_min) && right_range.contains(&left_max))
+            return left.is_proper_subset(&right) || right.is_proper_subset(&left);
         })
         .count()
         .to_string()
@@ -25,13 +27,10 @@ pub fn part1(input: &String) -> String {
 pub fn part2(input: &String) -> String {
     parse(input)
         .filter(|(left_min, left_max, right_min, right_max)| {
-            let left_range = left_min..=left_max;
-            let right_range = right_min..=right_max;
+            let left = Interval::new(*left_min, *left_max);
+            let right = Interval::new(*right_min, *right_max);
 
-            left_range.contains(&right_min)
-                || left_range.contains(&right_max)
-                || right_range.contains(&left_min)
-                || right_range.contains(&left_max)
+            !left.intersection(&right).is_empty()
         })
         .count()
         .to_string()

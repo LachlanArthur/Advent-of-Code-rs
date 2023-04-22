@@ -1,10 +1,11 @@
+use clap::StructOpt;
 use puzzles::{make_puzzle, Puzzle};
 use std::{path::PathBuf, vec};
-use structopt::StructOpt;
 
 pub mod bench;
 pub mod command;
 pub mod puzzles;
+pub mod test;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "aoc", about = "Advent of Code in Rust")]

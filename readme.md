@@ -24,6 +24,17 @@ aoc all
 cargo build --release
 ```
 
+## Dev
+
+Install [cargo-watch](https://crates.io/crates/cargo-watch):
+```
+cargo install cargo-watch
+```
+And then
+```
+cargo watch -x 'run day 2022 01'
+```
+
 ## Todo
 
 - Codegen command to create a new puzzle stub

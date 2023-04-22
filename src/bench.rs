@@ -41,9 +41,18 @@ pub fn benchmark_puzzle_with_inputs(puzzle: Puzzle) -> Vec<BenchResult> {
                           input_path,
                           expected,
                       }| {
+                    let input = read_file(input_path.as_str());
+
+                    // Warm the cache by pre-running a few times
+                    func(&input);
+                    func(&input);
+                    func(&input);
+                    func(&input);
+                    func(&input);
+
                     bench(
                         format!("{} {}", name, input_name).as_str(),
-                        || func(&read_file(input_path.as_str())),
+                        || func(&input),
                         expected,
                     )
                 },

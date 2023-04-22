@@ -1,5 +1,6 @@
 use itertools::Itertools;
 use std::fs;
+use std::ops::Div;
 use std::time::{Duration, Instant};
 
 use crate::puzzles::{Part, Puzzle, TestFile};
@@ -10,14 +11,33 @@ pub struct BenchResult {
 }
 
 pub fn bench(name: &str, func: impl Fn() -> String, expected: Option<String>) -> BenchResult {
-    let start = Instant::now();
     let result = func();
-    let elapsed = Instant::elapsed(&start);
+
+    // Warm the cache by pre-running a few more times
+    func();
+    func();
+    func();
+    func();
+    func();
+
+    // Benchmark
+    let start = Instant::now();
+    func();
+    func();
+    func();
+    func();
+    func();
+    func();
+    func();
+    func();
+    func();
+    func();
+    let elapsed = Instant::elapsed(&start).div(10);
 
     println!("{}: {} [{:?}]", name, result, elapsed);
 
     if let Some(expected) = expected {
-        assert!(result == expected);
+        assert!(result == expected, "Expected {:?} but got {:?}", expected, result);
     }
 
     BenchResult {
@@ -42,13 +62,6 @@ pub fn benchmark_puzzle_with_inputs(puzzle: Puzzle) -> Vec<BenchResult> {
                           expected,
                       }| {
                     let input = read_file(input_path.as_str());
-
-                    // Warm the cache by pre-running a few times
-                    func(&input);
-                    func(&input);
-                    func(&input);
-                    func(&input);
-                    func(&input);
 
                     bench(
                         format!("{} {}", name, input_name).as_str(),

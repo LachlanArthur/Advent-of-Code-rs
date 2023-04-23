@@ -13,6 +13,10 @@ pub struct BenchResult {
 pub fn bench(name: &str, func: impl Fn() -> String, expected: Option<String>) -> BenchResult {
     let result = func();
 
+    if let Some(expected) = expected {
+        assert!(result == expected, "Expected {:?} but got {:?}", expected, result);
+    }
+
     // Warm the cache by pre-running a few more times
     func();
     func();
@@ -35,10 +39,6 @@ pub fn bench(name: &str, func: impl Fn() -> String, expected: Option<String>) ->
     let elapsed = Instant::elapsed(&start).div(10);
 
     println!("{}: {} [{:?}]", name, result, elapsed);
-
-    if let Some(expected) = expected {
-        assert!(result == expected, "Expected {:?} but got {:?}", expected, result);
-    }
 
     BenchResult {
         name: name.to_string(),

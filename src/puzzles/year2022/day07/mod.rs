@@ -6,12 +6,10 @@ use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 enum ConsoleLine {
-    CdRoot,
-    CdUp,
-    CdTo(String),
+    Cd(String),
     Ls,
     Dir(String),
-    File { name: String, size: u64 },
+    File(u64),
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -24,17 +22,12 @@ impl std::str::FromStr for ConsoleLine {
         let words = line.split_whitespace().collect_vec();
 
         match words.as_slice() {
-            ["$", "cd", "/"] => Ok(ConsoleLine::CdRoot),
-            ["$", "cd", ".."] => Ok(ConsoleLine::CdUp),
-            ["$", "cd", dir] => Ok(ConsoleLine::CdTo(dir.to_string())),
+            ["$", "cd", dir] => Ok(ConsoleLine::Cd(dir.to_string())),
             ["$", "ls"] => Ok(ConsoleLine::Ls),
             ["dir", dir] => Ok(ConsoleLine::Dir(dir.to_string())),
-            [size, name] => {
+            [size, _] => {
                 if let Ok(size) = size.parse::<u64>() {
-                    Ok(ConsoleLine::File {
-                        name: name.to_string(),
-                        size,
-                    })
+                    Ok(ConsoleLine::File(size))
                 } else {
                     Err(ConsoleLineParseError)
                 }
@@ -55,14 +48,20 @@ fn calculate_dir_sizes(input: &String) -> HashMap<Vec<std::string::String>, u64>
                 .expect(format!("Failed to parse line {:?}", s).as_str())
         })
         .for_each(|line| match line {
-            ConsoleLine::CdRoot => cwd = vec!["/".to_string()],
-            ConsoleLine::CdUp => {
-                cwd.pop().expect("Tried to cd up from root");
-            }
-            ConsoleLine::CdTo(dir) => cwd.push(dir),
+            ConsoleLine::Cd(dir) => match dir.as_str() {
+                "/" => cwd = vec!["/".to_string()],
+                ".." => {
+                    if cwd.len() > 1 {
+                        cwd.pop();
+                    } else {
+                        panic!("Tried to go up from root");
+                    }
+                }
+                _ => cwd.push(dir),
+            },
             ConsoleLine::Ls => (),
             ConsoleLine::Dir(_) => (),
-            ConsoleLine::File { name: _, size } => {
+            ConsoleLine::File(size) => {
                 // Update each ancestor path with the file size
                 for i in 0..cwd.len() {
                     *dir_sizes.entry(cwd[0..=i].to_vec()).or_insert(0) += size;
@@ -97,7 +96,10 @@ pub fn part2(input: &String) -> String {
         .cloned()
         .filter(|size| size >= &need_free);
 
-    deletion_candidates.min().expect("No deletion candidates found").to_string()
+    deletion_candidates
+        .min()
+        .expect("No deletion candidates found")
+        .to_string()
 }
 
 pub fn parts(year: u16, day: u8) -> Vec<Part> {

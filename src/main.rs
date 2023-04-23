@@ -58,6 +58,7 @@ pub fn register_puzzles() -> std::vec::IntoIter<Puzzle> {
         make_puzzle(2022, 4, puzzles::year2022::day04::parts),
         make_puzzle(2022, 5, puzzles::year2022::day05::parts),
         make_puzzle(2022, 6, puzzles::year2022::day06::parts),
+        make_puzzle(2022, 7, puzzles::year2022::day07::parts),
     ]
     .into_iter()
 }
